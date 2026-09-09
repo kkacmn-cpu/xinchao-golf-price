@@ -1,0 +1,15 @@
+{
+  "name": "베트남 골프가격",
+  "short_name": "베트남 골프가격",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07110d",
+  "theme_color": "#dbff72",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
