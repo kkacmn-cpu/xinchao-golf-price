@@ -4,7 +4,6 @@
   const $ = (selector) => document.querySelector(selector);
   const esc = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
   const formatVnd = (value) => `${new Intl.NumberFormat('ko-KR').format(Math.round(value))}동`;
-  const formatKrw = (value) => `약 ${new Intl.NumberFormat('ko-KR').format(Math.round(value / 1000) * 1000)}원`;
   const menuButton = $('.menu-toggle');
   const mobileMenu = $('#mobile-menu');
   menuButton?.addEventListener('click', () => {
@@ -24,22 +23,22 @@
   const players = $('#price-players');
   const sort = $('#price-sort');
   const date = $('#price-date');
-  const tomorrow = new Date(Date.now() + 86400000 * 7);
-  if (date && !date.value) date.value = tomorrow.toISOString().slice(0, 10);
-
+  if (date && !date.value) date.value = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10);
   function effectivePrice(course) {
     const selectedDate = date?.value || '';
-    const conditions = (course.price?.conditions || []).filter((item) => (!selectedDate || !item.validFrom || item.validFrom <= selectedDate) && (!selectedDate || !item.validTo || item.validTo >= selectedDate));
-    if (!conditions.length) return null;
-    const pricedConditions = conditions.map((item) => ({ item, price: Number(item.price) })).filter(({ price }) => Number.isFinite(price) && price > 0);
+    if (!selectedDate) return null;
+    const isoWeekday = new Date(`${selectedDate}T12:00:00Z`).getUTCDay() || 7;
+    const conditions = (course.price?.conditions || []).filter((item) => item.validFrom && item.validTo && item.validFrom <= selectedDate && selectedDate <= item.validTo);
+    const pricedConditions = conditions.map((item) => {
+      const weekdayPrices = item.priceByIsoWeekday;
+      const price = weekdayPrices ? Number(weekdayPrices[String(isoWeekday)]) : Number(item.price);
+      return { item, price };
+    }).filter(({ price }) => Number.isFinite(price) && price > 0);
     if (!pricedConditions.length) return null;
     const minVnd = Math.min(...pricedConditions.map(({ price }) => price));
     const maxVnd = Math.max(...pricedConditions.map(({ price }) => price));
     const minCondition = pricedConditions.find(({ price }) => price === minVnd)?.item?.condition || '조건 확인 필요';
-    const usdToVnd = Number(data.rates.usdToVnd || 0);
-    const usdToKrw = Number(data.rates.usdToKrw || 0);
-    const toKrw = (vnd) => usdToVnd > 0 && usdToKrw > 0 ? vnd / usdToVnd * usdToKrw : 0;
-    return { minVnd, maxVnd, minVndText: formatVnd(minVnd), minKrw: toKrw(minVnd), minCondition };
+    return { minVnd, maxVnd, minVndText: formatVnd(minVnd), minCondition };
   }
 
   function visibleCourses() {
@@ -52,7 +51,7 @@
 
   function row(course) {
     const price = course.effective || course.price;
-    return `<article class="price-row" data-price-course data-region="${esc(course.region_id)}"><div><span class="region-label">${esc(course.region_ko)}</span><h3>${esc(course.name_ko)}</h3><p>${esc(course.official_name)}</p></div><div class="price-cell"><strong>${esc(price.minVndText)}</strong><span>${esc(price.minCondition)} · 1인 참고</span><small>${formatKrw(price.minKrw)} 환산 · 현재가 재확인</small></div><div class="row-actions"><button type="button" class="compare-toggle" data-compare-id="${esc(course.course_id)}" aria-pressed="${compare.has(course.course_id)}">${compare.has(course.course_id) ? '비교에서 빼기' : '비교 담기'}</button><a href="/golf/${esc(course.region_id)}/${esc(course.course_id)}/">조건 보기</a></div></article>`;
+    return `<article class="price-row" data-price-course data-region="${esc(course.region_id)}"><div><span class="region-label">${esc(course.region_ko)}</span><h3>${esc(course.name_ko)}</h3><p>${esc(course.official_name)}</p></div><div class="price-cell"><strong>${esc(price.minVndText)}</strong><span>${esc(price.minCondition)} · 1인 조건부 참고</span><small>원화·최종가는 최신 견적에서 확인</small></div><div class="row-actions"><button type="button" class="compare-toggle" data-compare-id="${esc(course.course_id)}" aria-pressed="${compare.has(course.course_id)}">${compare.has(course.course_id) ? '비교에서 빼기' : '비교 담기'}</button><a href="/golf/${esc(course.region_id)}/${esc(course.course_id)}/">조건 보기</a></div></article>`;
   }
 
   function renderCompare() {
@@ -66,7 +65,7 @@
     }
     const count = Number(players?.value || 4);
     target.className = 'compare-grid';
-    target.innerHTML = selected.map((course) => `<article class="compare-card"><span>${esc(course.region_ko)}</span><h3>${esc(course.name_ko)}</h3><strong>${formatVnd(course.effective.minVnd * count)}부터</strong><span>${count}인 참고 합계 · 1인 ${esc(course.effective.minVndText)}부터</span><button type="button" data-remove-compare="${esc(course.course_id)}">비교에서 빼기</button></article>`).join('');
+    target.innerHTML = selected.map((course) => `<article class="compare-card"><span>${esc(course.region_ko)}</span><h3>${esc(course.name_ko)}</h3><strong>${formatVnd(course.effective.minVnd * count)}부터</strong><span>${count}인 선택일 조건부 참고합계 · 1인 ${esc(course.effective.minVndText)}부터</span><button type="button" data-remove-compare="${esc(course.course_id)}">비교에서 빼기</button></article>`).join('');
   }
 
   function render() {
