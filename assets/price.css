@@ -63,6 +63,16 @@
   border-radius: 18px;
   box-shadow: var(--shadow);
 }
+.price-filter-extra {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
 .price-summary {
   display: grid;
   grid-template-columns: 0.55fr 0.75fr 1.7fr;
@@ -234,6 +244,9 @@
   .price-filter {
     grid-template-columns: repeat(2, 1fr);
   }
+  .price-filter-extra {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .price-filter .button {
     grid-column: 1/-1;
   }
@@ -268,6 +281,9 @@
     justify-self: stretch;
   }
   .price-filter {
+    grid-template-columns: 1fr;
+  }
+  .price-filter-extra {
     grid-template-columns: 1fr;
   }
   .price-filter .button {
