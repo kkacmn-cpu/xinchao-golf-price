@@ -37,5 +37,27 @@ for (const page of pages) {
 for (const url of urls) {
   if (!expected.has(url)) errors.push(`Unexpected sitemap URL: ${url}`);
 }
+
+const bookingGuidePath = join(root, "guide", "vinpearl-nha-trang-9-27-36-hole-rates-2026", "index.html");
+const bookingGuide = readFileSync(bookingGuidePath, "utf8");
+const bookingHead = bookingGuide.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] || "";
+const bookingArticle = bookingGuide.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
+if (!bookingArticle) errors.push("Vinpearl booking guide article content is missing.");
+if ((bookingGuide.match(/<h1\b/gi) || []).length !== 1) errors.push("Vinpearl booking guide must have exactly one H1.");
+const jsonLd = [...bookingHead.matchAll(/<script\s+type="application\/ld\+json">([\s\S]*?)<\/script>/gi)];
+for (const script of jsonLd) {
+  try {
+    JSON.parse(script[1]);
+  } catch {
+    errors.push("Vinpearl booking guide contains invalid JSON-LD.");
+  }
+}
+const articleHead = bookingHead
+  .replace(/<meta\s+property="og:site_name"[^>]*>/gi, "")
+  .replace(/"name":"베트남 골프가격"/g, "");
+const bookingCopy = `${articleHead} ${bookingArticle}`.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&");
+if (/(가격|요금|비용|금액|그린피|캐디피|₫|\b\d[\d,]*\s*(?:VND|동|원)\b)/i.test(bookingCopy)) {
+  errors.push("Vinpearl booking guide contains prohibited public pricing copy.");
+}
 console.log(JSON.stringify({ indexablePages: expected.size, sitemapUrls: urls.size, errors }, null, 2));
 if (errors.length) process.exitCode = 1;
