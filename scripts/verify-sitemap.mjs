@@ -59,5 +59,21 @@ const bookingCopy = `${articleHead} ${bookingArticle}`.replace(/<[^>]+>/g, " ").
 if (/(가격|요금|비용|금액|그린피|캐디피|₫|\b\d[\d,]*\s*(?:VND|동|원)\b)/i.test(bookingCopy)) {
   errors.push("Vinpearl booking guide contains prohibited public pricing copy.");
 }
+const montgomerieGuidePath = join(root, "guide", "montgomerie-links-vietnam-golf-rates-2026", "index.html");
+const montgomerieGuide = readFileSync(montgomerieGuidePath, "utf8");
+const montgomerieHead = montgomerieGuide.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] || "";
+if ((montgomerieGuide.match(/<h1\b/gi) || []).length !== 1) errors.push("Montgomerie 2026 rate guide must have exactly one H1.");
+if (!montgomerieGuide.includes("2,388,000 VND") || !montgomerieGuide.includes("4,650,000 VND")) errors.push("Montgomerie visitor rate table is missing source-verified 2026 prices.");
+if (!montgomerieGuide.includes("PUBLIC-RATE-GOLF.pdf") || !montgomerieGuide.includes("2026-09-30")) errors.push("Montgomerie guide must record the official source and verification date.");
+const montgomerieJsonLd = [...montgomerieHead.matchAll(/<script\s+type="application\/ld\+json">([\s\S]*?)<\/script>/gi)];
+for (const script of montgomerieJsonLd) {
+  try {
+    JSON.parse(script[1]);
+  } catch {
+    errors.push("Montgomerie guide contains invalid JSON-LD.");
+  }
+}
+if (!montgomerieJsonLd.some((script) => script[1].includes('"@type":"Article"'))) errors.push("Montgomerie guide Article schema is missing.");
+if (!montgomerieJsonLd.some((script) => script[1].includes('"@type":"FAQPage"'))) errors.push("Montgomerie guide FAQ schema is missing.");
 console.log(JSON.stringify({ indexablePages: expected.size, sitemapUrls: urls.size, errors }, null, 2));
 if (errors.length) process.exitCode = 1;
