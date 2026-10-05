@@ -322,3 +322,4 @@
     padding-top: 20px;
   }
 }
+.table-scroll{max-width:100%;overflow-x:auto;margin:1.5rem 0;border:1px solid #d9e3dd;border-radius:12px}.table-scroll table{width:100%;min-width:560px;border-collapse:collapse;text-align:left}.table-scroll th,.table-scroll td{padding:.8rem .9rem;border-bottom:1px solid #d9e3dd;white-space:nowrap}.table-scroll thead{background:#edf5f0}.table-scroll tr:last-child th,.table-scroll tr:last-child td{border-bottom:0}
