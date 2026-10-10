@@ -1,4 +1,5 @@
 import { readFileSync, readdirSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { join, relative, resolve, sep } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
@@ -26,6 +27,7 @@ for (const section of ["golf", "guide", "region"]) collect(join(root, section));
 const expected = new Set();
 for (const page of pages) {
   const html = readFileSync(page, "utf8");
+  if (html.includes("_FXwxkG/chat")) errors.push(`Wrong general-inquiry channel: ${relative(root, page)}`);
   if (/<meta\s+name="robots"\s+content="[^"]*noindex/i.test(html)) continue;
   const canonical = html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/i)?.[1];
   const pathname = "/" + relative(root, page).split(sep).join("/").replace(/index\.html$/, "");
@@ -46,6 +48,25 @@ const guideEntries = [...sitemap.matchAll(/<url\b[^>]*>([\s\S]*?)<\/url\s*>/g)]
 const newestGuideDate = guideEntries.filter((entry) => new URL(entry.url).pathname.startsWith("/guide/"))
   .reduce((latest, entry) => entry.lastmod > latest ? entry.lastmod : latest, "");
 const homeHtml = readFileSync(join(root, "index.html"), "utf8");
+const golfChatUrl = "https://pf.kakao.com/_xdBALn/chat";
+if (!homeHtml.includes(`href="${golfChatUrl}"`)) errors.push("Golf inquiry link missing from homepage.");
+const catalog = JSON.parse(readFileSync(join(root, "assets", "catalog.json"), "utf8"));
+const latestPriceEnd = catalog.courses.flatMap((course) => course.price?.conditions || [])
+  .reduce((latest, condition) => condition.validTo > latest ? condition.validTo : latest, "");
+const vietnamDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Ho_Chi_Minh", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+if (vietnamDate > latestPriceEnd && /<div id="price-list" class="price-list">[\s\S]*?data-price-course/.test(homeHtml)) {
+  errors.push("Expired price rows remain in non-JavaScript homepage HTML.");
+}
+if (vietnamDate > latestPriceEnd && !homeHtml.includes('id="price-empty" class="empty-state">')) {
+  errors.push("Expired-price explanation is hidden in non-JavaScript homepage HTML.");
+}
+const manifest = JSON.parse(readFileSync(join(root, "BUILD_MANIFEST.json"), "utf8"));
+if (manifest.url_count !== urls.size) errors.push("Build manifest URL count is stale.");
+for (const entry of manifest.files) {
+  const bytes = readFileSync(join(root, entry.path));
+  const hash = createHash("sha256").update(bytes).digest("hex").toUpperCase();
+  if (bytes.length !== entry.bytes || hash !== entry.sha256) errors.push(`Build manifest file mismatch: ${entry.path}`);
+}
 for (const entry of guideEntries.filter((item) => item.lastmod === newestGuideDate && new URL(item.url).pathname.startsWith("/guide/"))) {
   const path = new URL(entry.url).pathname;
   if (!homeHtml.includes(`href="${path}"`)) errors.push(`Latest guide lacks homepage link: ${path}`);
