@@ -1,7 +1,7 @@
 {
   "site": "price",
   "origin": "https://xinchao-golf-price.vercel.app",
-  "built_at": "2026-10-10T14:11:20.657Z",
+  "built_at": "2026-10-11T05:30:35.000Z",
   "source_registry": "XINCHAO_NATIONWIDE_AEO_STRATEGY_COVERAGE_V1_20260821",
   "source_registry_sha256": "AD6E7F2DEA38F5C060CA423793CEC2CB1C7B676993274117ACADA693592C360D",
   "price_dataset": "2026-09-23-fasttrack-adult-v1|2026-09|2026-09-canonical-golf-read-view",
@@ -9,7 +9,7 @@
   "course_count": 74,
   "region_count": 29,
   "current_priced_course_count": 0,
-  "url_count": 142,
+  "url_count": 143,
   "tracker_id": "xinchao-golf-price",
   "files": [
     {
@@ -588,6 +588,11 @@
       "sha256": "B15CCA79FE9751935B5BB377438AF5B4BFF6422354D785F8C51D2F20E683DEE7"
     },
     {
+      "path": "guide/vinpearl-leman-27-hole-rate-formula-2026/index.html",
+      "bytes": 9765,
+      "sha256": "7796C3C42751D40AA2A3B7ABDD96BDBDF1509CE961BEB2A12AB6549C0BF70A1F"
+    },
+    {
       "path": "guide/vinpearl-leman-ladies-day-october-2026/index.html",
       "bytes": 9753,
       "sha256": "86ABB5B7125B1E6FD274A89A05F022CEF0401DD38E376F47E141C0DC7C6D22C5"
@@ -629,8 +634,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85452,
-      "sha256": "20353BFD1BB46A5A37B3A65F29FA02806F9841FB652D62AB3DC30A4ADAC2C271"
+      "bytes": 85838,
+      "sha256": "86D85A8BF6BE7E7BC4C0E6E2123E222D4E5C1EDAB36571A1E87399DDA16FA26D"
     },
     {
       "path": "manifest.webmanifest",
@@ -789,8 +794,8 @@
     },
     {
       "path": "sitemap.xml",
-      "bytes": 29190,
-      "sha256": "9F8DE8158995CBA114E07A908271DED66E7DBF618680106FECFCABBDE454EF94"
+      "bytes": 29383,
+      "sha256": "2EE880302AEB31FD2EE5BB8E44683ECB4EE13A1D67E9DFEB3D593D90BAFB4F42"
     },
     {
       "path": "vercel.json",
