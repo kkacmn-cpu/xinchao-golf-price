@@ -589,8 +589,8 @@
     },
     {
       "path": "guide/vinpearl-leman-27-hole-rate-formula-2026/index.html",
-      "bytes": 9765,
-      "sha256": "7796C3C42751D40AA2A3B7ABDD96BDBDF1509CE961BEB2A12AB6549C0BF70A1F"
+      "bytes": 9787,
+      "sha256": "A0B144D44A09079B48117BA3C92A0B7CDC3445075D3907926A37008CFF005202"
     },
     {
       "path": "guide/vinpearl-leman-ladies-day-october-2026/index.html",
@@ -634,8 +634,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85444,
-      "sha256": "8443F0A2057AF57D187DA8417A6EB56769686896897AEF4E712D500297BF3D9B"
+      "bytes": 85934,
+      "sha256": "93912C4EA236456B670A64BFBABD6D3B1EE326AE10A3CA8EBCA12FA0137E74A2"
     },
     {
       "path": "manifest.webmanifest",
@@ -799,8 +799,8 @@
     },
     {
       "path": "vercel.json",
-      "bytes": 890,
-      "sha256": "3A6FB5EB15FA19B415B937D39099FDB6D45DAC13CE7B4A89F856D486EE5968DC"
+      "bytes": 33486,
+      "sha256": "ADC19087C7B3E5F597D6D10940DCB4C1C0AAE84C5E00715C52109DF2DD5EE26F"
     }
   ],
   "historical_priced_course_count": 29,
