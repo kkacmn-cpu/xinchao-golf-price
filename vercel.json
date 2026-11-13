@@ -195,7 +195,7 @@
       "permanent": true
     },
     {
-      "source": "/region/:slug*",
+      "source": "/region(/.*)?",
       "destination": "https://xinchao-golf.vercel.app/regions",
       "permanent": true
     },
@@ -210,8 +210,8 @@
       "permanent": true
     },
     {
-      "source": "/:path*",
-      "destination": "https://xinchao-golf.vercel.app/:path*",
+      "source": "/(.*)",
+      "destination": "https://xinchao-golf.vercel.app/$1",
       "permanent": true
     }
   ]
